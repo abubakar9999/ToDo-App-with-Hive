@@ -30,38 +30,47 @@ class _HomePageState extends State<HomePage> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(title: Text("Your Task")),
-        body: ValueListenableBuilder(
-          valueListenable: Hive.box<Todo>(Boxes.todo).listenable(),
-          builder: ( context, Box<Todo> box, _) {
-           if(box.values.isEmpty){
-            return Text("Your ToDo is Empty");
-            
-           } 
-           return ListView.builder(
-            itemCount: box.values.length,
-            
-            itemBuilder: (context,index){
-              Todo? data=box.getAt(index);
-              return Dismissible(
-                key:UniqueKey() , 
-                background: Container(color: Colors.red),
-                onDismissed: ((direction) {
-                  box.delete(index);
-               
-                }),
-              child: Card(
-                child: ListTile(
-                  title: Text(data!.title.toString()),
-                  subtitle: Text(data.discrib.toString()),
+        body: Column(
+          children: [
+            Text("abubjsdf"),
+            Expanded(
+              child: ValueListenableBuilder(
+                valueListenable: Hive.box<Todo>(Boxes.todo).listenable(),
+                builder: ( context, Box<Todo> box, _) {
+                 if(box.values.isEmpty){
+                  return Text("Your ToDo is Empty");
+                  
+                 } 
+                 return ListView.builder(
+                  itemCount: box.values.length,
+                  
+                  itemBuilder: (context,index){
+                    Todo? data=box.getAt(index);
+                    return Dismissible(
+                      key:UniqueKey() , 
+                      background: Container(color: Colors.red),
+                      onDismissed: ((direction) {
+                      setState(() {
+                          box.deleteAt(index);
+                      });
+                     
+                      }),
+                    child: Card(
+                      child: ListTile(
+                        title: Text(data!.title.toString()),
+                        subtitle: Text(data.discrib.toString()),
+                        ),
+                    ),
+                      );
+    
+                 });
+                 
+                 }
+    
                   ),
-              ),
-                );
-    
-           });
-           
-           }
-    
             ),
+          ],
+        ),
     
             floatingActionButton: FloatingActionButton(onPressed: (){
               Navigator.push(context, MaterialPageRoute(builder: (context)=>AddToList()));
