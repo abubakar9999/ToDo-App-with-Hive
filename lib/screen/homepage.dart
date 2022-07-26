@@ -16,7 +16,23 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
 
+TextEditingController searchData=TextEditingController();
+List<Todo> todo= [];
+Box<Todo>? box;
 
+
+
+
+@override
+  void initState() {
+    if(Hive.box<Todo>(Boxes.todo).isNotEmpty){
+    todo= Hive.box<Todo>(Boxes.todo).values.toList();
+    print(todo.length);
+    }
+
+    // TODO: implement initState
+    super.initState();
+  }
 
 
   @override
@@ -27,47 +43,63 @@ class _HomePageState extends State<HomePage> {
   }
   @override
   Widget build(BuildContext context) {
+   
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(title: Text("Your Task")),
         body: Column(
           children: [
-            Text("abubjsdf"),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              controller: searchData,
+
+              decoration: InputDecoration(
+                prefixIcon: Icon(Icons.search),
+                    hintText: "search your Item",
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(30),
+                    borderSide: BorderSide(color: Colors.yellow)
+                    
+                    )
+
+              ),
+              onChanged: (value){
+
+
+              },
+
+              
+            ),
+          ),
             Expanded(
-              child: ValueListenableBuilder(
-                valueListenable: Hive.box<Todo>(Boxes.todo).listenable(),
-                builder: ( context, Box<Todo> box, _) {
-                 if(box.values.isEmpty){
-                  return Text("Your ToDo is Empty");
-                  
-                 } 
-                 return ListView.builder(
-                  itemCount: box.values.length,
+              child: 
+                  ListView.builder(
+                  itemCount: todo.length,
                   
                   itemBuilder: (context,index){
-                    Todo? data=box.getAt(index);
+                    // Todo? data=box.getAt(index);
                     return Dismissible(
                       key:UniqueKey() , 
                       background: Container(color: Colors.red),
                       onDismissed: ((direction) {
                       setState(() {
-                          box.deleteAt(index);
+                          // box.deleteAt(index);
                       });
                      
                       }),
                     child: Card(
                       child: ListTile(
-                        title: Text(data!.title.toString()),
-                        subtitle: Text(data.discrib.toString()),
+                        title: Text(todo[index].title.toString()),
+                        subtitle: Text(todo[index].discrib.toString()),
                         ),
                     ),
                       );
     
-                 });
+                 })
                  
-                 }
+                 
     
-                  ),
+                  
             ),
           ],
         ),
@@ -89,4 +121,6 @@ class _HomePageState extends State<HomePage> {
     );
     
   }
+
+  
 }

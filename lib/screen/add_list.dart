@@ -1,6 +1,9 @@
+
+
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:mytodoapp/boxs.dart';
+import 'package:mytodoapp/screen/homepage.dart';
 
 import '../model/todo.dart';
 
@@ -105,6 +108,6 @@ class _AddToListState extends State<AddToList> {
   putDatainHive(){
     Box<Todo> contactBox=Hive.box<Todo>(Boxes.todo);
     contactBox.add(Todo( discrib: dis,title: titel));
-    Navigator.pop(context);
+    Navigator.push(context, MaterialPageRoute(builder: (_)=>HomePage()));
   }
 }
