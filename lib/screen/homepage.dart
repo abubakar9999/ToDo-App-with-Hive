@@ -15,6 +15,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+   Box<Todo> contactBox=Hive.box<Todo>(Boxes.todo);
 
 TextEditingController searchData=TextEditingController();
 List<Todo> todo= [];
@@ -29,6 +30,8 @@ Box<Todo>? box;
     todo= Hive.box<Todo>(Boxes.todo).values.toList();
     print(todo.length);
     }
+
+
 
     // TODO: implement initState
     super.initState();
@@ -63,7 +66,10 @@ Box<Todo>? box;
                     )
 
               ),
-              onChanged:serchTask
+              onChanged:(value){
+                serchTask(value);
+
+              }
 
               
             ),
@@ -79,9 +85,9 @@ Box<Todo>? box;
                       key:UniqueKey() , 
                       background: Container(color: Colors.red),
                       onDismissed: ((direction) {
-                      setState(() {
-                         todo.clear();
-                      });
+                     
+                        contactBox.deleteAt(index);
+                   
                      
                       }),
                     child: Card(
@@ -129,6 +135,8 @@ Box<Todo>? box;
     setState(() {
       todo=sugation;
     });
+
+   
   }
 
   
