@@ -63,10 +63,7 @@ Box<Todo>? box;
                     )
 
               ),
-              onChanged: (value){
-
-
-              },
+              onChanged:serchTask
 
               
             ),
@@ -83,7 +80,7 @@ Box<Todo>? box;
                       background: Container(color: Colors.red),
                       onDismissed: ((direction) {
                       setState(() {
-                          // box.deleteAt(index);
+                         todo.clear();
                       });
                      
                       }),
@@ -120,6 +117,18 @@ Box<Todo>? box;
       ),
     );
     
+  }
+
+  void serchTask(String query){
+    final sugation= todo.where((element){
+      final serchinlist=element.title!.toLowerCase();
+      final input=query.toLowerCase();
+      return serchinlist.contains(input);
+    }).toList();
+
+    setState(() {
+      todo=sugation;
+    });
   }
 
   
