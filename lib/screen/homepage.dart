@@ -15,28 +15,27 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-   Box<Todo> contactBox=Hive.box<Todo>(Boxes.todo);
+  Box<Todo> contactBox = Hive.box<Todo>(Boxes.todo);
 
-TextEditingController searchData=TextEditingController();
-List<Todo> todo= [];
-Box<Todo>? box;
+  TextEditingController searchData = TextEditingController();
+  List<Todo> todo = [];
+  Box<Todo>? box;
+  List foundUsers=[];
 
-
-
-
-@override
+  @override
   void initState() {
-    if(Hive.box<Todo>(Boxes.todo).isNotEmpty){
-    todo= Hive.box<Todo>(Boxes.todo).values.toList();
-    print(todo.length);
+    if (Hive.box<Todo>(Boxes.todo).isNotEmpty) {
+      todo = Hive.box<Todo>(Boxes.todo).values.toList();
+      print(todo.length);
     }
-
-
+   
+    setState(() {
+       foundUsers =todo;
+    });
 
     // TODO: implement initState
     super.initState();
   }
-
 
   @override
   void dispose() {
@@ -44,100 +43,98 @@ Box<Todo>? box;
     // TODO: implement dispose
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
-   
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(title: Text("Your Task")),
         body: Column(
           children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              controller: searchData,
-
-              decoration: InputDecoration(
-                prefixIcon: Icon(Icons.search),
-                    hintText: "search your Item",
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(30),
-                    borderSide: BorderSide(color: Colors.yellow)
-                    
-                    )
-
-              ),
-              onChanged:(value){
-                serchTask(value);
-
-              }
-
-              
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                  controller: searchData,
+                  decoration: InputDecoration(
+                      prefixIcon: Icon(Icons.search),
+                      hintText: "search your Item",
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(30),
+                          borderSide: BorderSide(color: Colors.yellow))),
+                  onChanged: (value) {
+                    runFilter(value);
+                    // serchTask(value);
+                  }),
             ),
-          ),
             Expanded(
-              child: 
-                  ListView.builder(
-                  itemCount: todo.length,
-                  
-                  itemBuilder: (context,index){
-                    // Todo? data=box.getAt(index);
-                    return Dismissible(
-                      key:UniqueKey() , 
-                      background: Container(color: Colors.red),
-                      onDismissed: ((direction) {
-                     
-                        contactBox.deleteAt(index);
-                   
-                     
-                      }),
-                    child: Card(
-                      child: ListTile(
-                        title: Text(todo[index].title.toString()),
-                        subtitle: Text(todo[index].discrib.toString()),
+                child: ListView.builder(
+                    itemCount: foundUsers.length,
+                    itemBuilder: (context, index) {
+                      // Todo? data=box.getAt(index);
+                      return Dismissible(
+                        key: UniqueKey(),
+                        background: Container(color: Colors.red),
+                        onDismissed: ((direction) {
+                          contactBox.deleteAt(index);
+                        }),
+                        child: Card(
+                          child: ListTile(
+                            title: Text(foundUsers[index].title.toString()),
+                            subtitle: Text(foundUsers[index].discrib.toString()),
+                          ),
                         ),
-                    ),
                       );
-    
-                 })
-                 
-                 
-    
-                  
-            ),
+                    })),
           ],
         ),
-    
-            floatingActionButton: FloatingActionButton(onPressed: (){
-              Navigator.push(context, MaterialPageRoute(builder: (context)=>AddToList()));
-    
-              
-            },
-            tooltip: "add",
-            child: Icon(Icons.add),
-            
-            ),
-          
-        
-    
-        
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => AddToList()));
+          },
+          tooltip: "add",
+          child: Icon(Icons.add),
+        ),
       ),
     );
-    
   }
 
-  void serchTask(String query){
-    final sugation= todo.where((element){
-      final serchinlist=element.title!.toLowerCase();
-      final input=query.toLowerCase();
-      return serchinlist.contains(input);
-    }).toList();
+  void runFilter(String enteredKeyword) {
+    //todo foundUser is emti List
+    foundUsers = todo;
+    List results = [];
+    if (enteredKeyword.isEmpty) {
+      // if the search field is empty or only contains white-space, we'll display all users
+      results = foundUsers;
+    } else {
+      var starts = foundUsers
+          .where((s) =>
+              s.title.toLowerCase().startsWith(enteredKeyword.toLowerCase()))
+          .toList();
 
+      var contains = foundUsers
+          .where((s) =>
+              s.title.toLowerCase().contains(enteredKeyword.toLowerCase()) &&
+              !s.title.toLowerCase().startsWith(enteredKeyword.toLowerCase()))
+          .toList()
+        ..sort((a, b) =>
+            a.title.toLowerCase().compareTo(b.title.toLowerCase()));
+
+      results = [...starts, ...contains];
+    }
+      // Refresh the UI
     setState(() {
-      todo=sugation;
+      foundUsers = results;
     });
-
-   
   }
 
   
+     
+    
+
+
+    
+  
+
+
 }
